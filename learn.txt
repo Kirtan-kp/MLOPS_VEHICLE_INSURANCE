@@ -1,0 +1,424 @@
+Imagine you're building an ML project
+
+Suppose your project looks like this:
+
+HousePricePrediction/
+
+│── app.py
+│── requirements.txt
+│── setup.py
+
+└── src/
+    │── __init__.py
+    │── utils.py
+    │── logger.py
+    │── pipeline.py
+
+Inside utils.py you have
+
+def add(a, b):
+    return a + b
+
+Now in app.py you write
+
+from src.utils import add
+
+print(add(5, 10))
+
+Everything works because you're running app.py inside this project.
+
+But what if another Python program wants to use your code?
+
+Imagine another folder:
+
+Desktop/
+
+│── test.py
+
+Inside it:
+
+from src.utils import add
+
+Will this work?
+
+❌ No.
+
+Python says
+
+ModuleNotFoundError: No module named 'src'
+
+because Python doesn't know where your project is.
+
+So how do we tell Python?
+
+We install our own project.
+
+Just like you install
+
+pip install numpy
+
+or
+
+pip install pandas
+
+you can also install your own project.
+
+That's what
+
+pip install .
+
+does.
+
+Notice the dot.
+
+The dot means
+
+Install the project in the current folder.
+
+Wait... install MY project??
+
+Exactly.
+
+People think pip only installs packages from the internet.
+
+No.
+
+It can install your own code too.
+
+For example
+
+HousePricePrediction/
+
+becomes an installable package.
+
+What happens after pip install .?
+
+Suppose your project is here
+
+C:\Projects\HousePricePrediction
+
+When you run
+
+pip install .
+
+Python copies your project into
+
+Lib/
+    site-packages/
+
+where packages like
+
+numpy
+pandas
+sklearn
+
+already live.
+
+So now your project also becomes one of those installed packages.
+
+Imagine this
+
+Before
+
+Python knows
+
+✔ numpy
+✔ pandas
+✔ sklearn
+
+❌ HousePricePrediction
+
+After
+
+Python knows
+
+✔ numpy
+✔ pandas
+✔ sklearn
+✔ HousePricePrediction
+Here's the problem
+
+Suppose you installed your project.
+
+Then later you edit
+
+def add(a,b):
+    return a+b+100
+
+Will Python see the new code?
+
+No.
+
+Because Python is using the copied version inside
+
+site-packages
+
+not your original project.
+
+So after every change
+
+you must do
+
+pip install .
+
+again.
+
+Imagine editing code 50 times a day.
+
+That would be horrible.
+
+That's why editable mode exists
+
+Instead of copying
+
+Python creates a shortcut.
+
+Imagine this.
+
+Without editable mode
+
+Your Project
+
+↓
+
+Copy
+
+↓
+
+site-packages
+
+↓
+
+Python imports here
+
+With editable mode
+
+Your Project
+
+↑
+
+Shortcut
+
+↓
+
+site-packages
+
+↓
+
+Python imports original files
+
+No copy.
+
+Only a shortcut.
+
+Think about Windows shortcuts
+
+Suppose you have
+
+Movie.mp4
+
+on your Desktop.
+
+You create a shortcut.
+
+Now if you rename
+
+Movie.mp4
+
+the shortcut opens the renamed file.
+
+Why?
+
+Because it isn't another copy.
+
+It points to the original.
+
+pip install -e .
+
+works exactly like that.
+
+So what is -e?
+
+-e
+
+means
+
+Editable
+
+Instead of copying
+
+your project
+
+Python says
+
+I'll always use the original files.
+
+Why does this matter?
+
+Suppose
+
+utils.py
+
+Originally
+
+def add(a,b):
+    return a+b
+
+Run
+
+Output
+
+15
+
+Now edit
+
+def add(a,b):
+    return a+b+500
+
+Save.
+
+Run again.
+
+Output
+
+515
+
+WITHOUT reinstalling.
+
+That's because Python is reading your original project.
+
+Then why is it inside requirements.txt?
+
+Suppose
+
+requirements.txt
+
+contains
+
+numpy
+pandas
+scikit-learn
+
+-e .
+
+When someone clones your GitHub repository
+
+they run
+
+pip install -r requirements.txt
+
+Pip reads
+
+Install numpy
+
+↓
+
+Install pandas
+
+↓
+
+Install sklearn
+
+↓
+
+Install MY project in editable mode
+
+Now everything works.
+
+What if we remove -e .?
+
+Then only
+
+numpy
+
+pandas
+
+sklearn
+
+get installed.
+
+Your own project is not installed.
+
+Sometimes imports like
+
+from src.pipeline import TrainPipeline
+
+start failing depending on where you're running the code from.
+
+Why is setup.py needed?
+
+Python has to know
+
+package name
+version
+author
+which folders are packages
+
+For example
+
+from setuptools import setup, find_packages
+
+setup(
+    name="houseprice",
+    version="1.0",
+    packages=find_packages()
+)
+
+Now Python understands
+
+Oh,
+
+this folder
+
+is a package.
+
+I can install it.
+The easiest analogy
+
+Imagine you're writing a book.
+
+Normal install (pip install .)
+
+Your publisher prints 1,000 copies of your book.
+
+Later you fix a typo.
+
+The printed copies still have the typo.
+
+You must print them all again.
+
+Editable install (pip install -e .)
+
+Instead of printing copies,
+
+everyone reads your Google Docs document.
+
+Whenever you edit it,
+
+everyone immediately sees the latest version.
+
+No reprinting.
+
+No reinstalling.
+
+In your ML projects
+
+You've probably seen folders like:
+
+project/
+│
+├── app.py
+├── requirements.txt
+├── setup.py
+│
+└── src/
+    ├── components/
+    ├── pipeline/
+    ├── utils/
+    ├── logger.py
+
+The -e . line ensures that when you (or anyone else) run:
+
+pip install -r requirements.txt
+
+your own src package is installed in editable mode, so you can keep developing it without reinstalling after every code change.
