@@ -1,2 +1,13 @@
 logs/
 artifact/
+src.egg-info/
+src/__pycache__/
+src/components/__pycache__/
+src/configuration/__pycache__/
+src/constants/__pycache__/
+src/data_access/__pycache__/
+src/entity/__pycache__/
+src/exception/__pycache__/
+src/logger/__pycache__/
+src/pipline/__pycache__/
+src/utils/__pycache__/
