@@ -79,7 +79,10 @@ async def index(request: Request):
     Renders the main HTML form page for vehicle data input.
     """
     return templates.TemplateResponse(
-            "vehicledata.html",{"request": request, "context": "Rendering"})
+        request=request,
+        name="vehicledata.html",
+        context={"context": "Rendering"}
+    )
 
 # Route to trigger the model training process
 @app.get("/train")
